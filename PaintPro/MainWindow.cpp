@@ -4,7 +4,10 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	ui.setupUi(this);
 
-	setCentralWidget(&renderArea);
+	setCentralWidget(&scrollArea);
+	scrollArea.setWidget(&renderArea);
+	scrollArea.setAlignment(Qt::AlignCenter);
+	//setCentralWidget(&renderArea);
 
 	connect(ui.actionFileOpen, SIGNAL(triggered()), this, SLOT(fileOpen()));
 	connect(ui.actionFileSave, SIGNAL(triggered()), this, SLOT(fileSave()));
@@ -16,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	connect(ui.actionPenWidth2, SIGNAL(triggered()), this, SLOT(penWidth(2)));
 	connect(ui.actionPenWidth1, SIGNAL(triggered()), this, SLOT(penWidth(1)));
 
-	this->adjustSize();
+	scrollArea.adjustSize();
 }
 
 MainWindow::~MainWindow() {
@@ -28,7 +31,7 @@ void MainWindow::fileOpen() {
 	if (filename.isEmpty()) return;
 
 	renderArea.setImage(filename);
-	this->adjustSize();
+	scrollArea.adjustSize();
 }
 
 void MainWindow::fileSave() {

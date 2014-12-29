@@ -3,6 +3,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_MainWindow.h"
+#include <QScrollArea>
 #include "RenderArea.h"
 
 class MainWindow : public QMainWindow
@@ -20,6 +21,7 @@ public slots:
 
 private:
 	Ui::MainWindowClass ui;
+	QScrollArea scrollArea;
 	RenderArea renderArea;
 
 };
