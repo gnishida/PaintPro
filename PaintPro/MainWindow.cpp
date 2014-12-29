@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include <QFileDialog>
+#include <QSignalMapper>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	ui.setupUi(this);
@@ -7,26 +8,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	setCentralWidget(&scrollArea);
 	scrollArea.setWidget(&renderArea);
 	scrollArea.setAlignment(Qt::AlignCenter);
-	//setCentralWidget(&renderArea);
 
-	connect(ui.actionFileOpen, SIGNAL(triggered()), this, SLOT(fileOpen()));
-	connect(ui.actionFileSave, SIGNAL(triggered()), this, SLOT(fileSave()));
+	connect(ui.actionFileOpen, SIGNAL(triggered()), this, SLOT(onFileOpen()));
+	connect(ui.actionFileSave, SIGNAL(triggered()), this, SLOT(onFileSave()));
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
-	connect(ui.actionPenWidth20, SIGNAL(triggered()), this, SLOT(penWidth(20)));
-	connect(ui.actionPenWidth10, SIGNAL(triggered()), this, SLOT(penWidth(10)));
-	connect(ui.actionPenWidth5, SIGNAL(triggered()), this, SLOT(penWidth(5)));
-	connect(ui.actionPenWidth2, SIGNAL(triggered()), this, SLOT(penWidth(2)));
-	connect(ui.actionPenWidth1, SIGNAL(triggered()), this, SLOT(penWidth(1)));
+	QSignalMapper* signalMapper = new QSignalMapper(this);
+	connect(ui.actionPenWidth20, SIGNAL(triggered()), signalMapper, SLOT(map()));
+	connect(ui.actionPenWidth10, SIGNAL(triggered()), signalMapper, SLOT(map()));
+	connect(ui.actionPenWidth5, SIGNAL(triggered()), signalMapper, SLOT(map()));
+	connect(ui.actionPenWidth2, SIGNAL(triggered()), signalMapper, SLOT(map()));
+	connect(ui.actionPenWidth1, SIGNAL(triggered()), signalMapper, SLOT(map()));
+
+	signalMapper -> setMapping (ui.actionPenWidth20, 20);
+	signalMapper -> setMapping (ui.actionPenWidth10, 10);
+	signalMapper -> setMapping (ui.actionPenWidth5, 5);
+	signalMapper -> setMapping (ui.actionPenWidth2, 2);
+	signalMapper -> setMapping (ui.actionPenWidth1, 1);
+
+	connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(onPenWidth(int))) ;
 
 	scrollArea.adjustSize();
 }
 
 MainWindow::~MainWindow() {
-
 }
 
-void MainWindow::fileOpen() {
+void MainWindow::onFileOpen() {
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Image files (*.jpg)"));
 	if (filename.isEmpty()) return;
 
@@ -34,13 +42,13 @@ void MainWindow::fileOpen() {
 	scrollArea.adjustSize();
 }
 
-void MainWindow::fileSave() {
+void MainWindow::onFileSave() {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("Image files (*.jpg)"));
 	if (filename.isEmpty()) return;
 
 	renderArea.saveImage(filename);
 }
 
-void MainWindow::penWidth(int width) {
+void MainWindow::onPenWidth(int width) {
 	renderArea.setPenWidth(width);
 }

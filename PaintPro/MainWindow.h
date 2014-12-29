@@ -15,9 +15,9 @@ public:
 	~MainWindow();
 
 public slots:
-	void fileOpen();
-	void fileSave();
-	void penWidth(int width);
+	void onFileOpen();
+	void onFileSave();
+	void onPenWidth(int width);
 
 private:
 	Ui::MainWindowClass ui;

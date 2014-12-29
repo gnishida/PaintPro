@@ -13,7 +13,7 @@ public:
 	void setPenWidth(int penWidth);
 	void saveImage(const QString& filename);
 	void setImage(const QString& filename);
-	void resizeImage(QImage *image, const QSize &newSize);
+	void resizeImage(const QSize &newSize);
 	void drawLineTo(const QPoint &endPoint);
 	QColor getAveragedColor(int x, int y);
 

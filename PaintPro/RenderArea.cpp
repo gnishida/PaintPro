@@ -28,14 +28,15 @@ void RenderArea::setImage(const QString& filename) {
 	update();
 }
 
-void RenderArea::resizeImage(QImage *image, const QSize &newSize) {
-	if (image->size() == newSize) return;
+void RenderArea::resizeImage(const QSize &newSize) {
+	if (fgImage.size() == newSize) return;
 	
 	QImage newImage(newSize, QImage::Format_ARGB32);
 	newImage.fill(qRgba(255, 255, 255, 0));
 	QPainter painter(&newImage);
-	painter.drawImage(QPoint(0, 0), *image);
-	*image = newImage;
+	painter.drawImage(QPoint(0, 0), fgImage);
+	//*image = newImage;
+	fgImage = newImage;
 }
 
 void RenderArea::drawLineTo(const QPoint &endPoint) {
@@ -101,11 +102,7 @@ void RenderArea::mouseReleaseEvent(QMouseEvent *event) {
 
 void RenderArea::resizeEvent(QResizeEvent *event) {
 	if (width() > fgImage.width() || height() > fgImage.height()) {
-		//int newWidth = qMax(width() + 128, fgImage.width());
-		int newWidth = width();
-		//int newHeight = qMax(height() + 128, fgImage.height());
-		int newHeight = height();
-		resizeImage(&fgImage, QSize(newWidth, newHeight));
+		resizeImage(QSize(width(), height()));
 		update();
 	}
 
