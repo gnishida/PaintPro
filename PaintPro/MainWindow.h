@@ -15,6 +15,8 @@ public:
 
 public slots:
 	void fileOpen();
+	void fileSave();
+	void penWidth(int width);
 
 private:
 	Ui::MainWindowClass ui;

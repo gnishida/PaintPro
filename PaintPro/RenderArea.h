@@ -10,6 +10,8 @@ Q_OBJECT
 public:
 	RenderArea(QWidget* parent = 0);
 
+	void setPenWidth(int penWidth);
+	void saveImage(const QString& filename);
 	void setImage(const QString& filename);
 	void resizeImage(QImage *image, const QSize &newSize);
 	void drawLineTo(const QPoint &endPoint);
@@ -23,8 +25,8 @@ protected:
 	void resizeEvent(QResizeEvent *event);
 
 private:
-	QImage bgPixmap;
-	QImage fgPixmap;
+	QImage bgImage;
+	QImage fgImage;
 	bool scribbling;
 	QPoint lastPoint;
 	QColor color;
