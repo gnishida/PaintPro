@@ -13,6 +13,7 @@ public:
 	void setImage(const QString& filename);
 	void resizeImage(QImage *image, const QSize &newSize);
 	void drawLineTo(const QPoint &endPoint);
+	QColor getAveragedColor(int x, int y);
 
 protected:
 	void paintEvent(QPaintEvent* event);
@@ -22,9 +23,11 @@ protected:
 	void resizeEvent(QResizeEvent *event);
 
 private:
-	QPixmap bgPixmap;
+	QImage bgPixmap;
 	QImage fgPixmap;
 	bool scribbling;
 	QPoint lastPoint;
+	QColor color;
+	int penWidth;
 };
 
