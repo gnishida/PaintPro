@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
 	connect(ui.actionFileOpen, SIGNAL(triggered()), this, SLOT(onFileOpen()));
 	connect(ui.actionFileSave, SIGNAL(triggered()), this, SLOT(onFileSave()));
+	connect(ui.actionFileLoadBackground, SIGNAL(triggered()), this, SLOT(onFileLoadBackground()));
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
 	QSignalMapper* signalMapper = new QSignalMapper(this);
@@ -28,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
 	connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(onPenWidth(int))) ;
 
+	connect(ui.actionPeekBackground, SIGNAL(triggered()), this, SLOT(onPeekBackground())) ;
+
 	scrollArea.adjustSize();
 }
 
@@ -39,7 +42,7 @@ void MainWindow::onFileOpen() {
 	if (filename.isEmpty()) return;
 
 	renderArea.setImage(filename);
-	scrollArea.adjustSize();
+	//scrollArea.adjustSize();
 }
 
 void MainWindow::onFileSave() {
@@ -49,6 +52,18 @@ void MainWindow::onFileSave() {
 	renderArea.saveImage(filename);
 }
 
+void MainWindow::onFileLoadBackground() {
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Image files (*.jpg)"));
+	if (filename.isEmpty()) return;
+
+	renderArea.setBgImage(filename);
+	//scrollArea.adjustSize();
+}
+
 void MainWindow::onPenWidth(int width) {
 	renderArea.setPenWidth(width);
+}
+
+void MainWindow::onPeekBackground() {
+	renderArea.setLayerFlipped(ui.actionPeekBackground->isChecked());
 }

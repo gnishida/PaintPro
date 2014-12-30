@@ -13,9 +13,12 @@ public:
 	void setPenWidth(int penWidth);
 	void saveImage(const QString& filename);
 	void setImage(const QString& filename);
+	void setBgImage(const QString& filename);
 	void resizeImage(const QSize &newSize);
+	void drawPoint(const QPoint &point);
 	void drawLineTo(const QPoint &endPoint);
 	QColor getAveragedColor(int x, int y);
+	void setLayerFlipped(bool flipped);
 
 protected:
 	void paintEvent(QPaintEvent* event);
@@ -23,6 +26,8 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void resizeEvent(QResizeEvent *event);
+	void keyPressEvent(QKeyEvent* keyEvent);
+	void keyReleaseEvent(QKeyEvent* keyEvent);
 
 private:
 	QImage bgImage;
@@ -31,5 +36,7 @@ private:
 	QPoint lastPoint;
 	QColor color;
 	int penWidth;
+	bool layerFlipped;
+	int life;
 };
 

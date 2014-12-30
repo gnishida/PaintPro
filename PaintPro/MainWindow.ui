@@ -30,6 +30,8 @@
     <addaction name="actionFileOpen"/>
     <addaction name="actionFileSave"/>
     <addaction name="separator"/>
+    <addaction name="actionFileLoadBackground"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuPenWidth">
@@ -42,8 +44,15 @@
     <addaction name="actionPenWidth2"/>
     <addaction name="actionPenWidth1"/>
    </widget>
+   <widget class="QMenu" name="menuPeek">
+    <property name="title">
+     <string>Peek</string>
+    </property>
+    <addaction name="actionPeekBackground"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPenWidth"/>
+   <addaction name="menuPeek"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -98,6 +107,19 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionFileLoadBackground">
+   <property name="text">
+    <string>Load Background</string>
+   </property>
+  </action>
+  <action name="actionPeekBackground">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Peek Background</string>
    </property>
   </action>
  </widget>

@@ -17,7 +17,9 @@ public:
 public slots:
 	void onFileOpen();
 	void onFileSave();
+	void onFileLoadBackground();
 	void onPenWidth(int width);
+	void onPeekBackground();
 
 private:
 	Ui::MainWindowClass ui;
