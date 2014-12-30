@@ -65,7 +65,7 @@ void RenderArea::resizeImage(const QSize &newSize) {
 }
 
 void RenderArea::drawPoint(const QPoint &point) {
-	QPoint pt = point / scale;
+	QPoint pt(((float)point.x() - 0.5) / scale, ((float)point.y() - 0.5) / scale);
 
 	QPainter painter(&fgImage);
 	painter.setPen(QPen(color, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -79,8 +79,8 @@ void RenderArea::drawPoint(const QPoint &point) {
 }
 
 void RenderArea::drawLineTo(const QPoint &endPoint) {
-	QPoint pt1 = lastPoint / scale;
-	QPoint pt2 = endPoint / scale;
+	QPoint pt1(((float)lastPoint.x() - 0.5) / scale, ((float)lastPoint.y() - 0.5) / scale);
+	QPoint pt2(((float)endPoint.x() - 0.5) / scale, ((float)endPoint.y() - 0.5) / scale);
 
 	QPainter painter(&fgImage);
 	painter.setPen(QPen(color, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -104,12 +104,12 @@ void RenderArea::drawLineTo(const QPoint &endPoint) {
 }
 
 QColor RenderArea::getAveragedColor(const QPoint& point) {
-	QPoint pt = point / scale;
+	QPoint pt(((float)point.x() - 0.5) / scale, ((float)point.y() - 0.5) / scale);
 
 	QVector3D rgb(0, 0, 0);
 	int count = 0;
-	for (int u = pt.x() - penWidth * 0.5; u <= pt.x() + penWidth * 0.5; ++u) {
-		for (int v = pt.y() - penWidth * 0.5; v <= pt.y() + penWidth * 0.5; ++v) {
+	for (int u = pt.x() - penWidth * 0.5 + 0.5; u < pt.x() + penWidth * 0.5 + 0.5; ++u) {
+		for (int v = pt.y() - penWidth * 0.5; v < pt.y() + penWidth * 0.5; ++v) {
 			if (u < 0 || u >= bgImage.width() || v < 0 || v >= bgImage.height()) continue;
 
 			QColor c = QColor(bgImage.pixel(u, v));
