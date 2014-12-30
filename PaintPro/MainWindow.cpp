@@ -27,16 +27,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	signalMapper->setMapping(ui.actionPenWidth1, 1);
 	connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(onPenWidth(int))) ;
 
-	QSignalMapper* signalMapper2 = new QSignalMapper(this);
-	connect(ui.actionZoom800, SIGNAL(triggered()), signalMapper2, SLOT(map()));
-	connect(ui.actionZoom400, SIGNAL(triggered()), signalMapper2, SLOT(map()));
-	connect(ui.actionZoom200, SIGNAL(triggered()), signalMapper2, SLOT(map()));
-	connect(ui.actionZoom100, SIGNAL(triggered()), signalMapper2, SLOT(map()));
-	signalMapper2->setMapping(ui.actionZoom800, 800);
-	signalMapper2->setMapping(ui.actionZoom400, 400);
-	signalMapper2->setMapping(ui.actionZoom200, 200);
-	signalMapper2->setMapping(ui.actionZoom100, 100);
-	connect(signalMapper2, SIGNAL(mapped(int)), this, SLOT(onZoom(int))) ;
+	ui.actionPenWidth20->setChecked(true);
 
 	connect(ui.actionPeekBackground, SIGNAL(triggered()), this, SLOT(onPeekBackground())) ;
 
@@ -77,10 +68,6 @@ void MainWindow::onPenWidth(int width) {
 	ui.actionPenWidth20->setChecked(width == 20);
 
 	renderArea.setPenWidth(width);
-}
-
-void MainWindow::onZoom(int factor) {
-	renderArea.setScale((float)factor / 100);
 }
 
 void MainWindow::onPeekBackground() {

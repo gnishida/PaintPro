@@ -50,18 +50,8 @@
     </property>
     <addaction name="actionPeekBackground"/>
    </widget>
-   <widget class="QMenu" name="menuZoom">
-    <property name="title">
-     <string>Zoom</string>
-    </property>
-    <addaction name="actionZoom800"/>
-    <addaction name="actionZoom400"/>
-    <addaction name="actionZoom200"/>
-    <addaction name="actionZoom100"/>
-   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPenWidth"/>
-   <addaction name="menuZoom"/>
    <addaction name="menuPeek"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">

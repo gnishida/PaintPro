@@ -48,6 +48,7 @@ void RenderArea::setBgImage(const QString& filename) {
 	bgImage.load(filename);
 
 	this->setFixedSize(bgImage.width() * scale, bgImage.height() * scale);
+	resizeImage(QSize(bgImage.width(), bgImage.height()));
 
 	update();
 	this->adjustSize();
@@ -60,7 +61,6 @@ void RenderArea::resizeImage(const QSize &newSize) {
 	newImage.fill(qRgba(255, 255, 255, 0));
 	QPainter painter(&newImage);
 	painter.drawImage(QPoint(0, 0), fgImage);
-	//*image = newImage;
 	fgImage = newImage;
 }
 
@@ -69,12 +69,12 @@ void RenderArea::drawPoint(const QPoint &point) {
 
 	QPainter painter(&fgImage);
 	painter.setPen(QPen(color, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-	//painter.drawEllipse(pt, penWidth / 2, penWidth / 2);
+	painter.setRenderHint(QPainter::Antialiasing);
+	painter.setRenderHint(QPainter::HighQualityAntialiasing);
 	painter.drawPoint(pt);
 	
 	int rad = (penWidth / 2) + 2;
 	rad *= scale;
-	//update(QRect(point - QPoint(penWidth / 2 + 2, penWidth / 2 + 2), point + QPoint(penWidth / 2 + 2, penWidth / 2 + 2)));
 	update(QRect(point, point).normalized().adjusted(-rad, -rad, +rad, +rad));
 }
 
@@ -84,6 +84,9 @@ void RenderArea::drawLineTo(const QPoint &endPoint) {
 
 	QPainter painter(&fgImage);
 	painter.setPen(QPen(color, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+	painter.setRenderHint(QPainter::Antialiasing);
+	painter.setRenderHint(QPainter::HighQualityAntialiasing);
+
 	painter.drawLine(pt1, pt2);
 
 	QPoint diff = pt2 - pt1;;
@@ -182,10 +185,10 @@ void RenderArea::wheelEvent(QWheelEvent* event) {
 }
 
 void RenderArea::resizeEvent(QResizeEvent *event) {
-	if (width() > fgImage.width() || height() > fgImage.height()) {
+	/*if (width() > fgImage.width() || height() > fgImage.height()) {
 		resizeImage(QSize(width(), height()));
 		update();
-	}
+	}*/
 
 	QWidget::resizeEvent(event);
 }
