@@ -19,6 +19,7 @@ public slots:
 	void onFileSave();
 	void onFileLoadBackground();
 	void onPenWidth(int width);
+	void onZoom(int factor);
 	void onPeekBackground();
 
 private:

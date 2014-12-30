@@ -9,12 +9,22 @@ RenderArea::RenderArea(QWidget* parent) : QWidget(parent) {
 	setBackgroundRole(QPalette::Base);
 	setAutoFillBackground(true);
 
-	setBgImage("morgan-freeman.jpg");
-
+	scale = 1.0f;
 	penWidth = 20;
 	layerFlipped = false;
 
+	setBgImage("morgan-freeman.jpg");
+
 	this->setFocusPolicy(Qt::StrongFocus);
+}
+
+void RenderArea::setScale(float scale) {
+	this->scale = scale;
+
+	this->setFixedSize(bgImage.width() * scale, bgImage.height() * scale);
+
+	update();
+	this->adjustSize();
 }
 
 void RenderArea::setPenWidth(int penWidth) {
@@ -28,7 +38,7 @@ void RenderArea::saveImage(const QString& filename) {
 void RenderArea::setImage(const QString& filename) {
 	fgImage.load(filename);
 
-	this->setFixedSize(fgImage.width(), fgImage.height());
+	this->setFixedSize(fgImage.width() * scale, fgImage.height() * scale);
 
 	update();
 	this->adjustSize();
@@ -37,7 +47,7 @@ void RenderArea::setImage(const QString& filename) {
 void RenderArea::setBgImage(const QString& filename) {
 	bgImage.load(filename);
 
-	this->setFixedSize(bgImage.width(), bgImage.height());
+	this->setFixedSize(bgImage.width() * scale, bgImage.height() * scale);
 
 	update();
 	this->adjustSize();
@@ -55,40 +65,51 @@ void RenderArea::resizeImage(const QSize &newSize) {
 }
 
 void RenderArea::drawPoint(const QPoint &point) {
+	QPoint pt = point / scale;
+
 	QPainter painter(&fgImage);
 	painter.setPen(QPen(color, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-	painter.drawPoint(point);
+	//painter.drawEllipse(pt, penWidth / 2, penWidth / 2);
+	painter.drawPoint(pt);
 	
 	int rad = (penWidth / 2) + 2;
+	rad *= scale;
+	//update(QRect(point - QPoint(penWidth / 2 + 2, penWidth / 2 + 2), point + QPoint(penWidth / 2 + 2, penWidth / 2 + 2)));
 	update(QRect(point, point).normalized().adjusted(-rad, -rad, +rad, +rad));
 }
 
 void RenderArea::drawLineTo(const QPoint &endPoint) {
+	QPoint pt1 = lastPoint / scale;
+	QPoint pt2 = endPoint / scale;
+
 	QPainter painter(&fgImage);
 	painter.setPen(QPen(color, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-	painter.drawLine(lastPoint, endPoint);
+	painter.drawLine(pt1, pt2);
 
-	QPoint diff = endPoint - lastPoint;
+	QPoint diff = pt2 - pt1;;
 	life -= (int)sqrtf(diff.x() * diff.x() + diff.y() * diff.y());
 	if (life < 0) {
 		life = penWidth * LIFE_FACTOR;
-		color = getAveragedColor(lastPoint.x(), lastPoint.y());
+		color = getAveragedColor(lastPoint);
 	}
 	
 	int rad = (penWidth / 2) + 2;
+	rad *= scale;
 	update(QRect(lastPoint, endPoint).normalized().adjusted(-rad, -rad, +rad, +rad));
 
 	lastPoint = endPoint;
 }
 
-QColor RenderArea::getAveragedColor(int x, int y) {
+QColor RenderArea::getAveragedColor(const QPoint& point) {
+	QPoint pt = point / scale;
+
 	QVector3D rgb(0, 0, 0);
 	int count = 0;
-	for (int u = x - penWidth * 0.5; u <= x + penWidth * 0.5; ++u) {
-		for (int v = y - penWidth * 0.5; v <= y + penWidth * 0.5; ++v) {
-			if (x < 0 || x >= bgImage.width() || y < 0 || y >= bgImage.height()) continue;
+	for (int u = pt.x() - penWidth * 0.5; u <= pt.x() + penWidth * 0.5; ++u) {
+		for (int v = pt.y() - penWidth * 0.5; v <= pt.y() + penWidth * 0.5; ++v) {
+			if (u < 0 || u >= bgImage.width() || v < 0 || v >= bgImage.height()) continue;
 
-			QColor c = QColor(bgImage.pixel(lastPoint.x(), lastPoint.y()));
+			QColor c = QColor(bgImage.pixel(u, v));
 
 			rgb += QVector3D(c.red(), c.green(), c.blue());
 			count++;
@@ -107,6 +128,8 @@ void RenderArea::setLayerFlipped(bool flipped) {
 
 void RenderArea::paintEvent(QPaintEvent * /* event */) {
 	QPainter painter(this);
+
+	painter.scale(scale, scale);
 
 	if (!layerFlipped) {
 		painter.setOpacity(0.2);
@@ -129,7 +152,7 @@ void RenderArea::mousePressEvent(QMouseEvent *event) {
 		scribbling = true;
 		life = penWidth * LIFE_FACTOR;
 
-		color = getAveragedColor(lastPoint.x(), lastPoint.y());
+		color = getAveragedColor(lastPoint);
 		drawPoint(event->pos());
 	}
 }
@@ -143,6 +166,18 @@ void RenderArea::mouseReleaseEvent(QMouseEvent *event) {
 	if (scribbling) {
 		drawLineTo(event->pos());
 		scribbling = false;
+	}
+}
+
+void RenderArea::wheelEvent(QWheelEvent* event) {
+	if (event->modifiers() & Qt::ControlModifier) {
+		scale += event->delta() / 120;
+		if (scale < 1) scale = 1;
+		if (scale > 8) scale = 8;
+
+		setScale(scale);
+	} else {
+		QWidget::wheelEvent(event);
 	}
 }
 
@@ -161,7 +196,7 @@ void RenderArea::keyPressEvent(QKeyEvent* event) {
 		scribbling = true;
 		life = penWidth * LIFE_FACTOR;
 
-		color = getAveragedColor(lastPoint.x(), lastPoint.y());
+		color = getAveragedColor(lastPoint);
 		drawPoint(lastPoint);
 
 		this->setMouseTracking(true);
