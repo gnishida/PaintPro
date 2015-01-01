@@ -12,10 +12,13 @@ RenderArea::RenderArea(QWidget* parent) : QWidget(parent) {
 	scale = 1.0f;
 	penWidth = 20;
 	layerFlipped = false;
+	scribbling = false;
 
 	setBgImage("morgan-freeman.jpg");
 
 	this->setFocusPolicy(Qt::StrongFocus);
+	this->setMouseTracking(true);
+	this->setCursor(Qt::BlankCursor);
 }
 
 void RenderArea::setScale(float scale) {
@@ -147,6 +150,13 @@ void RenderArea::paintEvent(QPaintEvent * /* event */) {
 		painter.setOpacity(1.0);
 		painter.drawImage(QPoint(0, 0), bgImage);
 	}
+
+	if (!scribbling) {
+		painter.setPen(QColor(0, 0, 0));
+		int r = penWidth * 0.5;
+		if (r == 0) r = 1;
+		painter.drawEllipse(lastPoint, r, r);
+	}
 }
 
 void RenderArea::mousePressEvent(QMouseEvent *event) {
@@ -163,6 +173,15 @@ void RenderArea::mousePressEvent(QMouseEvent *event) {
 void RenderArea::mouseMoveEvent(QMouseEvent *event) {
 	if (scribbling)
 		drawLineTo(event->pos());
+	else {
+		QPoint oldPoint = lastPoint;
+		lastPoint = event->pos();
+
+		int rad = (penWidth / 2) + 2;
+		rad *= scale;
+		update(QRect(oldPoint, oldPoint).normalized().adjusted(-rad, -rad, +rad, +rad));
+		update(QRect(lastPoint, lastPoint).normalized().adjusted(-rad, -rad, +rad, +rad));
+	}
 }
 
 void RenderArea::mouseReleaseEvent(QMouseEvent *event) {
@@ -201,8 +220,6 @@ void RenderArea::keyPressEvent(QKeyEvent* event) {
 
 		color = getAveragedColor(lastPoint);
 		drawPoint(lastPoint);
-
-		this->setMouseTracking(true);
 	} else if (event->key() == Qt::Key_F) {
 		layerFlipped = true;
 		update();
@@ -211,7 +228,6 @@ void RenderArea::keyPressEvent(QKeyEvent* event) {
 
 void RenderArea::keyReleaseEvent(QKeyEvent* event) {
 	scribbling = false;
-	this->setMouseTracking(false);
 
 	layerFlipped = false;
 	update();
