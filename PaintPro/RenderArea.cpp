@@ -2,8 +2,16 @@
 #include <QPainter>
 #include <QRgb>
 #include <QVector3D>
+#include <QString>
+#include <QFile>
+#include <iostream>
+#include <fstream>
 
 #define LIFE_FACTOR 10
+
+std::ostream& operator<<(std::ostream& out, const Stroke& s) {
+	return out << s.type << "\t" << s.start.x() << "\t" << s.start.y() << "\t" << s.end.x() << "\t" << s.end.y() << "\t" << s.color.red() << "\t" << s.color.green() << "\t" << s.color.blue() << "\t" << s.penWidth;
+}
 
 RenderArea::RenderArea(QWidget* parent) : QWidget(parent) {
 	setBackgroundRole(QPalette::Base);
@@ -36,6 +44,15 @@ void RenderArea::setPenWidth(int penWidth) {
 
 void RenderArea::saveImage(const QString& filename) {
 	fgImage.save(filename);
+
+	QString filename2 = filename.mid(0, filename.lastIndexOf(".")) + ".log";
+
+	std::ofstream out(filename2.toUtf8().data());
+
+	for (int i = 0; i < history.size(); ++i) {
+		out << history[i] << std::endl;
+	}
+	out.close();
 }
 
 void RenderArea::setImage(const QString& filename) {
@@ -79,6 +96,8 @@ void RenderArea::drawPoint(const QPoint &point) {
 	int rad = (penWidth / 2) + 2;
 	rad *= scale;
 	update(QRect(point, point).normalized().adjusted(-rad, -rad, +rad, +rad));
+
+	history.push_back(Stroke(Stroke::TYPE_POINT, point, point, color, penWidth));
 }
 
 void RenderArea::drawLineTo(const QPoint &endPoint) {
@@ -102,6 +121,8 @@ void RenderArea::drawLineTo(const QPoint &endPoint) {
 	int rad = (penWidth / 2) + 2;
 	rad *= scale;
 	update(QRect(lastPoint, endPoint).normalized().adjusted(-rad, -rad, +rad, +rad));
+
+	history.push_back(Stroke(Stroke::TYPE_LINE, lastPoint, endPoint, color, penWidth));
 
 	lastPoint = endPoint;
 }

@@ -3,6 +3,24 @@
 #include <QWidget>
 #include <QPixmap>
 #include <QMouseEvent>
+#include <iostream>
+
+class Stroke {
+public:
+	enum { TYPE_POINT = 0, TYPE_LINE };
+
+public:
+	Stroke(int type, const QPoint& start, const QPoint& end, const QColor& color, int penWidth) : type(type), start(start), end(end), color(color), penWidth(penWidth) {}
+	
+	friend std::ostream& operator<<(std::ostream& out, const Stroke& s);
+
+private:
+	int type;
+	QPoint start;
+	QPoint end;
+	QColor color;
+	int penWidth;
+};
 
 class RenderArea : public QWidget {
 Q_OBJECT
@@ -41,5 +59,7 @@ private:
 	int penWidth;
 	bool layerFlipped;
 	int life;
+
+	std::vector<Stroke> history;
 };
 
